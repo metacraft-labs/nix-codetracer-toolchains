@@ -13,10 +13,9 @@
   latest = pkgs.go;
 
   # Specific versions available in nixpkgs
-  go_1_21 = pkgs.go_1_21 or pkgs.go;
-  go_1_22 = pkgs.go_1_22 or pkgs.go;
-  go_1_23 = pkgs.go_1_23 or pkgs.go;
+  # Note: Go versions older than ~2 releases from latest become EOL
   go_1_24 = pkgs.go_1_24 or pkgs.go;
+  go_1_25 = pkgs.go_1_25 or pkgs.go;
 
   # Development tools
   gopls = pkgs.gopls;

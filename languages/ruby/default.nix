@@ -12,10 +12,9 @@
   default = pkgs.ruby;
   latest = pkgs.ruby;
 
-  # Specific versions
-  ruby_3_1 = pkgs.ruby_3_1 or pkgs.ruby;
-  ruby_3_2 = pkgs.ruby_3_2 or pkgs.ruby;
+  # Specific versions (note: older versions get EOL quickly)
   ruby_3_3 = pkgs.ruby_3_3 or pkgs.ruby;
+  ruby_3_4 = pkgs.ruby_3_4 or pkgs.ruby;
 
   # Development tools
   bundler = pkgs.bundler;

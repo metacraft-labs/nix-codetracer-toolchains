@@ -30,13 +30,13 @@ in {
 
   # All packages flattened for easy access
   allPackages = {
-    # Nim
+    # Nim (multi-version)
     nim-1_6 = nim.nim-1_6;
     nim-2_0 = nim.nim-2_0;
     nim-2_2 = nim.nim-2_2;
     nimble = nim.nimble;
 
-    # Rust
+    # Rust (multi-version via fenix)
     rust-stable = rust.stable;
     rust-nightly = rust.nightly;
     rust-1_75 = rust.rust-1_75;
@@ -44,24 +44,36 @@ in {
     rust-1_82 = rust.rust-1_82;
     rust-analyzer = rust.rust-analyzer;
 
-    # Zig
+    # Zig (multi-version via zig-overlay)
     zig-default = zig.default;
     zig-master = zig.master;
     zls = zig.zls;
 
-    # Go
+    # Go (multi-version)
     go-default = go.default;
+    go_1_24 = go.go_1_24;
+    go_1_25 = go.go_1_25;
     gopls = go.gopls;
     delve = go.delve;
 
-    # Python
+    # Python (multi-version)
     python-default = python.default;
     python311 = python.python311;
     python312 = python.python312;
+    python313 = python.python313;
 
-    # C/C++
+    # Ruby (multi-version)
+    ruby-default = ruby.default;
+    ruby_3_3 = ruby.ruby_3_3;
+    ruby_3_4 = ruby.ruby_3_4;
+
+    # C/C++ (multi-version)
     gcc = c-cpp.gcc;
+    gcc13 = c-cpp.gcc13;
+    gcc14 = c-cpp.gcc14;
     clang = c-cpp.clang;
+    clang18 = c-cpp.clang18;
+    clang19 = c-cpp.clang19;
     llvm = c-cpp.llvm;
     lldb = c-cpp.lldb;
     cmake = c-cpp.cmake;
@@ -76,9 +88,6 @@ in {
     # Crystal
     crystal = crystal.default;
 
-    # Ruby
-    ruby = ruby.default;
-
     # Swift
     swift = swift.default;
 
@@ -87,12 +96,14 @@ in {
 
     # Ada
     gnat = ada.gnat;
+    gprbuild = ada.gprbuild;
 
     # COBOL
     gnucobol = cobol.gnucobol;
 
-    # Assembly
+    # Assembly & cross-compilation
     nasm = asm.nasm;
     qemu = asm.qemu;
+    gdb = asm.gdb;
   };
 }

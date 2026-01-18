@@ -12,9 +12,7 @@
   default = pkgs.python3;
   latest = pkgs.python3;
 
-  # Specific versions
-  python39 = pkgs.python39 or pkgs.python3;
-  python310 = pkgs.python310 or pkgs.python3;
+  # Specific versions (note: older versions get EOL)
   python311 = pkgs.python311 or pkgs.python3;
   python312 = pkgs.python312 or pkgs.python3;
   python313 = pkgs.python313 or pkgs.python3;
