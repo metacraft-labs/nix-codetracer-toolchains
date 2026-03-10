@@ -25,6 +25,8 @@ This flake composes multiple popular language-specific Nix flakes and provides c
 | **Ada** | nixpkgs | GNAT |
 | **COBOL** | nixpkgs | GnuCOBOL |
 | **Assembly** | nixpkgs | NASM + cross-compilers |
+| **Odin** | nixpkgs | Latest |
+| **Mojo** | External (Modular magic CLI) | Wrapper with install instructions |
 
 ## Usage
 

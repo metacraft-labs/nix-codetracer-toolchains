@@ -121,8 +121,17 @@
               # COBOL
               cobol = import ./languages/cobol {pkgs = final;};
 
+              # Julia
+              julia = import ./languages/julia {pkgs = final;};
+
               # Assembly toolchains
               asm = import ./languages/asm {pkgs = final;};
+
+              # Odin
+              odin = import ./languages/odin {pkgs = final;};
+
+              # Mojo (wrapper — requires external installation via magic CLI)
+              mojo = import ./languages/mojo {pkgs = final;};
             };
           };
         };
@@ -165,7 +174,10 @@
               echo "  - fortran: GFortran compiler"
               echo "  - ada: GNAT Ada compiler"
               echo "  - cobol: GnuCOBOL compiler"
+              echo "  - julia: Julia interpreter versions"
               echo "  - asm: Assembly toolchains (nasm, cross-compilers)"
+              echo "  - odin: Odin compiler"
+              echo "  - mojo: Mojo compiler (requires external installation)"
               echo ""
               echo "Usage:"
               echo "  Add this flake as an input to your project's flake.nix"
@@ -198,6 +210,12 @@
 
             # Assembly
             asm.nasm
+
+            # Odin
+            odin.default
+
+            # Mojo (wrapper — requires external installation)
+            mojo.default
 
             # Utilities
             pkgs.just

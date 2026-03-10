@@ -23,10 +23,13 @@ let
   fortran = import ../languages/fortran {inherit pkgs;};
   ada = import ../languages/ada {inherit pkgs;};
   cobol = import ../languages/cobol {inherit pkgs;};
+  julia = import ../languages/julia {inherit pkgs;};
   asm = import ../languages/asm {inherit pkgs;};
+  odin = import ../languages/odin {inherit pkgs;};
+  mojo = import ../languages/mojo {inherit pkgs;};
 in {
   # Export all language modules
-  inherit nim rust zig go python c-cpp d pascal crystal ruby swift fortran ada cobol asm;
+  inherit nim rust zig go python c-cpp d pascal crystal ruby swift fortran ada cobol julia asm odin mojo;
 
   # All packages flattened for easy access
   allPackages = {
@@ -101,9 +104,20 @@ in {
     # COBOL
     gnucobol = cobol.gnucobol;
 
+    # Julia
+    julia-bin = julia.default;
+    julia_111-bin = julia.julia_111-bin;
+    julia_112-bin = julia.julia_112-bin;
+
     # Assembly & cross-compilation
     nasm = asm.nasm;
     qemu = asm.qemu;
     gdb = asm.gdb;
+
+    # Odin
+    odin = odin.default;
+
+    # Mojo (wrapper — requires external installation via magic CLI)
+    mojo = mojo.default;
   };
 }
