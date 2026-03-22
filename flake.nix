@@ -7,12 +7,10 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-modules.url = "github:metacraft-labs/nixos-modules";
 
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
+    nixpkgs.follows = "nixos-modules/nixpkgs";
+    flake-parts.follows = "nixos-modules/flake-parts";
 
     # Rust toolchain management
     # https://github.com/nix-community/fenix
@@ -45,6 +43,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    nixos-modules,
     flake-parts,
     fenix,
     rust-overlay,
@@ -59,8 +58,15 @@
         "x86_64-darwin"
         "aarch64-darwin"
       ];
+      imports = [
+        nixos-modules.modules.flake.git-hooks
+      ];
 
       flake = {
+        mcl.shard-matrix.systemsToBuild = [
+          "x86_64-linux"
+          "aarch64-darwin"
+        ];
         # Export overlays for consumers
         overlays = {
           default = self.overlays.all;
