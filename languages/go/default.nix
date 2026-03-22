@@ -6,7 +6,7 @@
 #   goVersions = import ./languages/go { inherit pkgs; };
 #   # Then use goVersions.default, goVersions.go_1_21, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # Default Go version (latest stable in nixpkgs)
   default = pkgs.go;

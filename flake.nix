@@ -2,8 +2,10 @@
   description = "CodeTracer Toolchains - Multi-language toolchain management for CodeTracer projects";
 
   nixConfig = {
-    extra-substituters = ["https://metacraft-labs-codetracer.cachix.org"];
-    extra-trusted-public-keys = ["metacraft-labs-codetracer.cachix.org-1:6p7pd81m6sIh59yr88yGPU9TFYJZkIrFZoFBWj/y4aE="];
+    extra-substituters = [ "https://metacraft-labs-codetracer.cachix.org" ];
+    extra-trusted-public-keys = [
+      "metacraft-labs-codetracer.cachix.org-1:6p7pd81m6sIh59yr88yGPU9TFYJZkIrFZoFBWj/y4aE="
+    ];
   };
 
   inputs = {
@@ -40,18 +42,19 @@
     };
   };
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    nixos-modules,
-    flake-parts,
-    fenix,
-    rust-overlay,
-    zig-overlay,
-    nix-nim-development,
-    ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixos-modules,
+      flake-parts,
+      fenix,
+      rust-overlay,
+      zig-overlay,
+      nix-nim-development,
+      ...
+    }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -80,7 +83,7 @@
           toolchains = final: prev: {
             codetracer-toolchains = {
               # Nim versions
-              nim = import ./languages/nim {pkgs = final;};
+              nim = import ./languages/nim { pkgs = final; };
 
               # Rust versions (via fenix)
               rust = import ./languages/rust {
@@ -95,49 +98,49 @@
               };
 
               # Go versions
-              go = import ./languages/go {pkgs = final;};
+              go = import ./languages/go { pkgs = final; };
 
               # Python versions
-              python = import ./languages/python {pkgs = final;};
+              python = import ./languages/python { pkgs = final; };
 
               # C/C++ toolchains
-              c-cpp = import ./languages/c-cpp {pkgs = final;};
+              c-cpp = import ./languages/c-cpp { pkgs = final; };
 
               # D language
-              d = import ./languages/d {pkgs = final;};
+              d = import ./languages/d { pkgs = final; };
 
               # Pascal
-              pascal = import ./languages/pascal {pkgs = final;};
+              pascal = import ./languages/pascal { pkgs = final; };
 
               # Crystal
-              crystal = import ./languages/crystal {pkgs = final;};
+              crystal = import ./languages/crystal { pkgs = final; };
 
               # Ruby
-              ruby = import ./languages/ruby {pkgs = final;};
+              ruby = import ./languages/ruby { pkgs = final; };
 
               # Swift
-              swift = import ./languages/swift {pkgs = final;};
+              swift = import ./languages/swift { pkgs = final; };
 
               # Fortran
-              fortran = import ./languages/fortran {pkgs = final;};
+              fortran = import ./languages/fortran { pkgs = final; };
 
               # Ada
-              ada = import ./languages/ada {pkgs = final;};
+              ada = import ./languages/ada { pkgs = final; };
 
               # COBOL
-              cobol = import ./languages/cobol {pkgs = final;};
+              cobol = import ./languages/cobol { pkgs = final; };
 
               # Julia
-              julia = import ./languages/julia {pkgs = final;};
+              julia = import ./languages/julia { pkgs = final; };
 
               # Assembly toolchains
-              asm = import ./languages/asm {pkgs = final;};
+              asm = import ./languages/asm { pkgs = final; };
 
               # Odin
-              odin = import ./languages/odin {pkgs = final;};
+              odin = import ./languages/odin { pkgs = final; };
 
               # Mojo (wrapper — requires external installation via magic CLI)
-              mojo = import ./languages/mojo {pkgs = final;};
+              mojo = import ./languages/mojo { pkgs = final; };
             };
           };
         };
@@ -146,21 +149,22 @@
         nimDev = nix-nim-development;
       };
 
-      perSystem = {
-        pkgs,
-        system,
-        ...
-      }: let
-        toolchains = import ./lib/toolchains.nix {
-          inherit pkgs;
-          fenix = fenix.packages.${system};
-          zig-overlay = zig-overlay.packages.${system};
-        };
-      in {
-        # Export all toolchain packages
-        packages =
-          toolchains.allPackages
-          // {
+      perSystem =
+        {
+          pkgs,
+          system,
+          ...
+        }:
+        let
+          toolchains = import ./lib/toolchains.nix {
+            inherit pkgs;
+            fenix = fenix.packages.${system};
+            zig-overlay = zig-overlay.packages.${system};
+          };
+        in
+        {
+          # Export all toolchain packages
+          packages = toolchains.allPackages // {
             default = pkgs.writeShellScriptBin "codetracer-toolchains-info" ''
               echo "CodeTracer Toolchains"
               echo "====================="
@@ -191,57 +195,57 @@
             '';
           };
 
-        # Development shell with all toolchains available
-        devShells.default = pkgs.mkShell {
-          packages = with toolchains; [
-            # Core toolchains
-            nim.default
-            rust.stable
-            zig.default
-            go.default
-            python.default
+          # Development shell with all toolchains available
+          devShells.default = pkgs.mkShell {
+            packages = with toolchains; [
+              # Core toolchains
+              nim.default
+              rust.stable
+              zig.default
+              go.default
+              python.default
 
-            # C/C++
-            c-cpp.gcc
-            c-cpp.clang
+              # C/C++
+              c-cpp.gcc
+              c-cpp.clang
 
-            # Other languages
-            d.ldc
-            pascal.fpc
-            crystal.default
-            ruby.default
-            fortran.gfortran
-            ada.gnat
-            cobol.gnucobol
+              # Other languages
+              d.ldc
+              pascal.fpc
+              crystal.default
+              ruby.default
+              fortran.gfortran
+              ada.gnat
+              cobol.gnucobol
 
-            # Assembly
-            asm.nasm
+              # Assembly
+              asm.nasm
 
-            # Odin
-            odin.default
+              # Odin
+              odin.default
 
-            # Mojo (wrapper — requires external installation)
-            mojo.default
+              # Mojo (wrapper — requires external installation)
+              mojo.default
 
-            # Utilities
-            pkgs.just
-            pkgs.figlet
-          ];
+              # Utilities
+              pkgs.just
+              pkgs.figlet
+            ];
 
-          shellHook = ''
-            figlet "CT Toolchains"
-            echo "All CodeTracer language toolchains are available"
-          '';
+            shellHook = ''
+              figlet "CT Toolchains"
+              echo "All CodeTracer language toolchains are available"
+            '';
+          };
+
+          # Minimal shell for specific language testing
+          devShells.minimal = pkgs.mkShell {
+            packages = [
+              toolchains.nim.default
+              toolchains.rust.stable
+              pkgs.just
+            ];
+          };
         };
-
-        # Minimal shell for specific language testing
-        devShells.minimal = pkgs.mkShell {
-          packages = [
-            toolchains.nim.default
-            toolchains.rust.stable
-            pkgs.just
-          ];
-        };
-      };
     };
 }

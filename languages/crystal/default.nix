@@ -6,7 +6,7 @@
 #   crystalToolchains = import ./languages/crystal { inherit pkgs; };
 #   # Then use crystalToolchains.crystal
 
-{pkgs}:
+{ pkgs }:
 {
   # Crystal compiler
   crystal = pkgs.crystal;

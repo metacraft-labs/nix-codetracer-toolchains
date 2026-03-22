@@ -6,7 +6,7 @@
 #   fortranToolchains = import ./languages/fortran { inherit pkgs; };
 #   # Then use fortranToolchains.gfortran
 
-{pkgs}:
+{ pkgs }:
 {
   # GFortran compiler
   gfortran = pkgs.gfortran;

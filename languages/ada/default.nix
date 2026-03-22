@@ -6,7 +6,7 @@
 #   adaToolchains = import ./languages/ada { inherit pkgs; };
 #   # Then use adaToolchains.gnat
 
-{pkgs}:
+{ pkgs }:
 {
   # GNAT Ada compiler (part of GCC)
   gnat = pkgs.gnat or pkgs.gnatPackages.gnat or null;

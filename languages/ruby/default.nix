@@ -6,7 +6,7 @@
 #   rubyVersions = import ./languages/ruby { inherit pkgs; };
 #   # Then use rubyVersions.default, rubyVersions.ruby_3_2, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # Default Ruby version
   default = pkgs.ruby;

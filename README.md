@@ -8,25 +8,25 @@ This flake composes multiple popular language-specific Nix flakes and provides c
 
 ## Supported Languages
 
-| Language | Source | Multi-version |
-|----------|--------|---------------|
-| **Rust** | [nix-community/fenix](https://github.com/nix-community/fenix) | Yes (stable, nightly, specific versions) |
-| **Zig** | [mitchellh/zig-overlay](https://github.com/mitchellh/zig-overlay) | Yes (releases, master/nightly) |
-| **Nim** | Custom (nixpkgs-based) | Yes (1.6, 2.0, 2.2) |
-| **Go** | nixpkgs | Yes (1.21-1.24) |
-| **Python** | nixpkgs | Yes (3.9-3.13) |
-| **Ruby** | nixpkgs | Yes (3.1-3.3) |
-| **C/C++** | nixpkgs | Yes (GCC 13/14, Clang 18/19) |
-| **D** | nixpkgs | DMD, LDC |
-| **Pascal** | nixpkgs | Free Pascal Compiler |
-| **Crystal** | nixpkgs | Latest |
-| **Swift** | nixpkgs | Latest |
-| **Fortran** | nixpkgs | GFortran |
-| **Ada** | nixpkgs | GNAT |
-| **COBOL** | nixpkgs | GnuCOBOL |
-| **Assembly** | nixpkgs | NASM + cross-compilers |
-| **Odin** | nixpkgs | Latest |
-| **Mojo** | External (Modular magic CLI) | Wrapper with install instructions |
+| Language     | Source                                                            | Multi-version                            |
+| ------------ | ----------------------------------------------------------------- | ---------------------------------------- |
+| **Rust**     | [nix-community/fenix](https://github.com/nix-community/fenix)     | Yes (stable, nightly, specific versions) |
+| **Zig**      | [mitchellh/zig-overlay](https://github.com/mitchellh/zig-overlay) | Yes (releases, master/nightly)           |
+| **Nim**      | Custom (nixpkgs-based)                                            | Yes (1.6, 2.0, 2.2)                      |
+| **Go**       | nixpkgs                                                           | Yes (1.21-1.24)                          |
+| **Python**   | nixpkgs                                                           | Yes (3.9-3.13)                           |
+| **Ruby**     | nixpkgs                                                           | Yes (3.1-3.3)                            |
+| **C/C++**    | nixpkgs                                                           | Yes (GCC 13/14, Clang 18/19)             |
+| **D**        | nixpkgs                                                           | DMD, LDC                                 |
+| **Pascal**   | nixpkgs                                                           | Free Pascal Compiler                     |
+| **Crystal**  | nixpkgs                                                           | Latest                                   |
+| **Swift**    | nixpkgs                                                           | Latest                                   |
+| **Fortran**  | nixpkgs                                                           | GFortran                                 |
+| **Ada**      | nixpkgs                                                           | GNAT                                     |
+| **COBOL**    | nixpkgs                                                           | GnuCOBOL                                 |
+| **Assembly** | nixpkgs                                                           | NASM + cross-compilers                   |
+| **Odin**     | nixpkgs                                                           | Latest                                   |
+| **Mojo**     | External (Modular magic CLI)                                      | Wrapper with install instructions        |
 
 ## Usage
 

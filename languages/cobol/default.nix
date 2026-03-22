@@ -6,7 +6,7 @@
 #   cobolToolchains = import ./languages/cobol { inherit pkgs; };
 #   # Then use cobolToolchains.gnucobol
 
-{pkgs}:
+{ pkgs }:
 {
   # GnuCOBOL compiler
   gnucobol = pkgs.gnucobol or null;

@@ -7,7 +7,7 @@
 #   swiftToolchains = import ./languages/swift { inherit pkgs; };
 #   # Then use swiftToolchains.swift
 
-{pkgs}:
+{ pkgs }:
 {
   # Swift compiler
   swift = pkgs.swift or pkgs.swiftPackages.swift or null;

@@ -6,7 +6,7 @@
 #   asmToolchains = import ./languages/asm { inherit pkgs; };
 #   # Then use asmToolchains.nasm, asmToolchains.arm64-cross, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # x86/x86_64 assemblers
   nasm = pkgs.nasm;

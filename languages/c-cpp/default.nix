@@ -6,7 +6,7 @@
 #   ccppToolchains = import ./languages/c-cpp { inherit pkgs; };
 #   # Then use ccppToolchains.gcc, ccppToolchains.clang, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # GCC toolchains
   gcc = pkgs.gcc;

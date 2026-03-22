@@ -9,27 +9,47 @@
   zig-overlay,
 }:
 let
-  nim = import ../languages/nim {inherit pkgs;};
-  rust = import ../languages/rust {inherit pkgs fenix;};
-  zig = import ../languages/zig {inherit pkgs zig-overlay;};
-  go = import ../languages/go {inherit pkgs;};
-  python = import ../languages/python {inherit pkgs;};
-  c-cpp = import ../languages/c-cpp {inherit pkgs;};
-  d = import ../languages/d {inherit pkgs;};
-  pascal = import ../languages/pascal {inherit pkgs;};
-  crystal = import ../languages/crystal {inherit pkgs;};
-  ruby = import ../languages/ruby {inherit pkgs;};
-  swift = import ../languages/swift {inherit pkgs;};
-  fortran = import ../languages/fortran {inherit pkgs;};
-  ada = import ../languages/ada {inherit pkgs;};
-  cobol = import ../languages/cobol {inherit pkgs;};
-  julia = import ../languages/julia {inherit pkgs;};
-  asm = import ../languages/asm {inherit pkgs;};
-  odin = import ../languages/odin {inherit pkgs;};
-  mojo = import ../languages/mojo {inherit pkgs;};
-in {
+  nim = import ../languages/nim { inherit pkgs; };
+  rust = import ../languages/rust { inherit pkgs fenix; };
+  zig = import ../languages/zig { inherit pkgs zig-overlay; };
+  go = import ../languages/go { inherit pkgs; };
+  python = import ../languages/python { inherit pkgs; };
+  c-cpp = import ../languages/c-cpp { inherit pkgs; };
+  d = import ../languages/d { inherit pkgs; };
+  pascal = import ../languages/pascal { inherit pkgs; };
+  crystal = import ../languages/crystal { inherit pkgs; };
+  ruby = import ../languages/ruby { inherit pkgs; };
+  swift = import ../languages/swift { inherit pkgs; };
+  fortran = import ../languages/fortran { inherit pkgs; };
+  ada = import ../languages/ada { inherit pkgs; };
+  cobol = import ../languages/cobol { inherit pkgs; };
+  julia = import ../languages/julia { inherit pkgs; };
+  asm = import ../languages/asm { inherit pkgs; };
+  odin = import ../languages/odin { inherit pkgs; };
+  mojo = import ../languages/mojo { inherit pkgs; };
+in
+{
   # Export all language modules
-  inherit nim rust zig go python c-cpp d pascal crystal ruby swift fortran ada cobol julia asm odin mojo;
+  inherit
+    nim
+    rust
+    zig
+    go
+    python
+    c-cpp
+    d
+    pascal
+    crystal
+    ruby
+    swift
+    fortran
+    ada
+    cobol
+    julia
+    asm
+    odin
+    mojo
+    ;
 
   # All packages flattened for easy access
   allPackages = {

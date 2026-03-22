@@ -24,7 +24,7 @@
 #   mojoToolchains = import ./languages/mojo { inherit pkgs; };
 #   # Then use mojoToolchains.default (wrapper that detects external mojo)
 
-{pkgs}:
+{ pkgs }:
 let
   mojoWrapper = pkgs.writeShellScriptBin "mojo" ''
     # If CONDA_PREFIX is set (pixi env active), check there first

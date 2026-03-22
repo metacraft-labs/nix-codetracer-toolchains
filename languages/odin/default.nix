@@ -8,7 +8,7 @@
 #   odinToolchains = import ./languages/odin { inherit pkgs; };
 #   # Then use odinToolchains.default
 
-{pkgs}:
+{ pkgs }:
 {
   # Odin compiler (latest from nixpkgs)
   default = pkgs.odin;

@@ -6,7 +6,7 @@
 #   pascalToolchains = import ./languages/pascal { inherit pkgs; };
 #   # Then use pascalToolchains.fpc
 
-{pkgs}:
+{ pkgs }:
 {
   # Free Pascal Compiler
   fpc = pkgs.fpc;

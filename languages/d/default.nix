@@ -6,7 +6,7 @@
 #   dToolchains = import ./languages/d { inherit pkgs; };
 #   # Then use dToolchains.dmd, dToolchains.ldc, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # LDC (LLVM-based D compiler) - recommended
   ldc = pkgs.ldc;

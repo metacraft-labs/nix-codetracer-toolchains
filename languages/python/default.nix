@@ -6,7 +6,7 @@
 #   pythonVersions = import ./languages/python { inherit pkgs; };
 #   # Then use pythonVersions.default, pythonVersions.python311, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # Default Python version
   default = pkgs.python3;

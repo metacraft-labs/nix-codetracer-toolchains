@@ -7,7 +7,7 @@
 #   zigVersions = import ./languages/zig { inherit pkgs zig-overlay; };
 #   # Then use zigVersions.default, zigVersions.master, etc.
 
-{pkgs, zig-overlay}:
+{ pkgs, zig-overlay }:
 {
   # Latest stable release
   default = zig-overlay.default;

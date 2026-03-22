@@ -7,10 +7,11 @@
 #   rustVersions = import ./languages/rust { inherit pkgs fenix; };
 #   # Then use rustVersions.stable, rustVersions.nightly, etc.
 
-{pkgs, fenix}:
+{ pkgs, fenix }:
 let
   # Create a complete toolchain from a fenix channel
-  mkRustToolchain = channel:
+  mkRustToolchain =
+    channel:
     channel.withComponents [
       "cargo"
       "clippy"
@@ -34,7 +35,8 @@ let
       sha256 = "sha256-yMuSb5eQPO/bHv+Bcf/US8LVMbf/G/0MSfiPwBhiPpk=";
     };
   };
-in {
+in
+{
   # Current stable channel
   stable = mkRustToolchain fenix.stable;
   rust-stable = mkRustToolchain fenix.stable;

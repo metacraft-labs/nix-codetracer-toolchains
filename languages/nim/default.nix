@@ -10,7 +10,7 @@
 # Or add to shell packages:
 #   packages = [ nimVersions.nim-1_6 nimVersions.nim-2_2 ];
 
-{pkgs}:
+{ pkgs }:
 let
   # Nim versions and their corresponding hashes
   # To add a new version:
@@ -24,7 +24,8 @@ let
   };
 
   # Build Nim for a specific version
-  mkNim = version: hash:
+  mkNim =
+    version: hash:
     pkgs.nim-unwrapped.overrideAttrs (old: {
       inherit version;
       pname = "nim";
@@ -39,7 +40,8 @@ let
         ./excpt-cstring.patch
       ];
     });
-in {
+in
+{
   # Specific versions
   nim-1_6 = mkNim "1.6.20" versions."1.6.20";
   nim-1_6_20 = mkNim "1.6.20" versions."1.6.20";

@@ -8,7 +8,7 @@
 #   juliaVersions = import ./languages/julia { inherit pkgs; };
 #   # Then use juliaVersions.default, juliaVersions.julia_111-bin, etc.
 
-{pkgs}:
+{ pkgs }:
 {
   # Default Julia version (latest stable binary)
   default = pkgs.julia-bin;
