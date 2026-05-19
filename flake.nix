@@ -11,7 +11,7 @@
   inputs = {
     nixos-modules.url = "github:metacraft-labs/nixos-modules";
 
-    nixpkgs.follows = "nixos-modules/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.follows = "nixos-modules/flake-parts";
 
     # Rust toolchain management
