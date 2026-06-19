@@ -100,6 +100,10 @@ in
     llvm = c-cpp.llvm;
     lldb = c-cpp.lldb;
     cmake = c-cpp.cmake;
+    ninja = c-cpp.ninja;
+    # C/C++ test libraries (consumed by the ct-test GoogleTest/Catch2 providers)
+    gtest = c-cpp.gtest;
+    catch2 = c-cpp.catch2;
 
     # D
     ldc = d.ldc;

@@ -30,6 +30,7 @@
 
   # Testing frameworks
   gtest = pkgs.gtest;
+  catch2 = pkgs.catch2_3;
   criterion = pkgs.criterion or null;
 
   # Analysis tools
