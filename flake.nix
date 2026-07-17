@@ -1,13 +1,6 @@
 {
   description = "CodeTracer Toolchains - Multi-language toolchain management for CodeTracer projects";
 
-  nixConfig = {
-    extra-substituters = [ "https://cache.metacraft-labs.com/metacraft-codetracer" ];
-    extra-trusted-public-keys = [
-      "metacraft-codetracer:9OV9wCDX560bt5/MrD4dlqnPpCitAEjpoqhNfQpWY3U="
-    ];
-  };
-
   inputs = {
     nixos-modules.url = "github:metacraft-labs/nixos-modules";
 
