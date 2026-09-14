@@ -2,7 +2,7 @@
   description = "CodeTracer Toolchains - Multi-language toolchain management for CodeTracer projects";
 
   inputs = {
-    nixos-modules.url = "github:metacraft-labs/nixos-modules";
+    nixos-modules.url = "github:metacraft-labs/devops-modules";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-parts.follows = "nixos-modules/flake-parts";
