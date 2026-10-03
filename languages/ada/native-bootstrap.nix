@@ -203,31 +203,25 @@ stdenv.mkDerivation (
 
     + lib.optionalString (stdenv.hostPlatform.isDarwin) ''
       upstreamBuildPrefix="/Users/runner/work/GNAT-FSF-builds/GNAT-FSF-builds/sbx/x86_64-darwin/gcc/install"
-      for i in "$out"/lib/*.dylib "$out"/lib/gcc/*/*/adalib/*.dylib; do
-        if [[ -f "$i" && ! -h "$i" ]]; then
-          install_name_tool -id "$i" "$i" || true
-          for old_path in $(otool -L "$i" | grep "$upstreamBuildPrefix" | awk '{print $1}'); do
-            new_path=`echo "$old_path" | sed "s,$upstreamBuildPrefix,$out,"`
-            install_name_tool -change "$old_path" "$new_path" "$i" || true
-          done
-          for old_path in $(otool -L "$i" | grep "@rpath" | awk '{print $1}'); do
-            if [[ "$upstreamTriplet" == "aarch64-apple-darwin23.2.0" ]]; then
-              # The authentic ARM archive's adalib references root libgcc_s
-              # and libatomic via @rpath. Resolve its actual unique installed target.
-              mapfile -t matches < <(find "$out/lib" -name "''${old_path##*/}" -exec readlink -f {} \; | sort -u)
-              if [[ "''${#matches[@]}" != 1 || ! -f "''${matches[0]}" ]]; then
-                echo "Unresolved/ambiguous native Ada dylib: $old_path" >&2
-                exit 1
-              fi
-              new_path="''${matches[0]}"
-              install_name_tool -change "$old_path" "$new_path" "$i"
-            else
+      if [[ "$upstreamTriplet" == "aarch64-apple-darwin23.2.0" ]]; then
+        # Preserve authenticated relative references: longer store-path commands
+        # exceed this archive's Mach-O header capacity. Validate every dependency.
+        ${python3}/bin/python3 ${./validate-native-dylibs.py} "$out"
+      else
+        for i in "$out"/lib/*.dylib "$out"/lib/gcc/*/*/adalib/*.dylib; do
+          if [[ -f "$i" && ! -h "$i" ]]; then
+            install_name_tool -id "$i" "$i" || true
+            for old_path in $(otool -L "$i" | grep "$upstreamBuildPrefix" | awk '{print $1}'); do
+              new_path=`echo "$old_path" | sed "s,$upstreamBuildPrefix,$out,"`
+              install_name_tool -change "$old_path" "$new_path" "$i" || true
+            done
+            for old_path in $(otool -L "$i" | grep "@rpath" | awk '{print $1}'); do
               new_path=$(echo "$old_path" | sed "s,@rpath,$(dirname "$i"),")
               install_name_tool -change "$old_path" "$new_path" "$i" || true
-            fi
-          done
-        fi
-      done
+            done
+          fi
+        done
+      fi
 
       "$out"/libexec/gcc/${upstreamTriplet}/${gccVersion}/install-tools/mkheaders -v -v \
         "$out" "${stdenv.cc.libc}"
