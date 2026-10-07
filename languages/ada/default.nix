@@ -82,6 +82,13 @@ let
               printf '%s\n' 'GNAT native bootstrap: original C conftest link dry run'
               ${bootstrap}/bin/gcc -### -o conftest conftest.c 2>&1
             fi
+            for component in fixincludes libcpp libiberty; do
+              subconfigureLog="build-arm64-apple-darwin/$component/config.log"
+              if [ -f "$subconfigureLog" ] && [ ! -L "$subconfigureLog" ]; then
+                printf '%s\n' "GNAT native subconfigure diagnostic: $subconfigureLog first 240 lines"
+                sed -n '1,240p' "$subconfigureLog"
+              fi
+            done
           '';
           patches = map (
             patch:
