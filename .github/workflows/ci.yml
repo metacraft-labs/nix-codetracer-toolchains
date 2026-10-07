@@ -26,7 +26,7 @@ jobs:
   lint:
     uses: metacraft-labs/devops-modules/.github/workflows/reusable-lint.yml@dev
     secrets:
-      NIX_GITHUB_TOKEN: ${{ secrets.NIX_GITHUB_TOKEN }}
+      NIX_GITHUB_TOKEN: ${{ secrets.NIX_GITHUB_TOKEN || secrets.GH_READ_METACRAFT_PRIVATE_REPOS || github.token }}
   ci:
     uses: metacraft-labs/devops-modules/.github/workflows/reusable-flake-checks-ci-matrix.yml@dev
     secrets:
