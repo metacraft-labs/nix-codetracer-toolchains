@@ -9,7 +9,7 @@ let
   # These are the exact pinned nixpkgs gnat13 producer arguments. The
   # existing Darwin x86 stdenv override does not apply on Apple Silicon.
   compiler = pkgs.wrapCC (
-    pkgs.gcc13.cc.override {
+    (pkgs.gcc13.cc.override {
       name = "gnat";
       langC = true;
       langCC = false;
@@ -17,7 +17,14 @@ let
       profiledCompiler = false;
       gnat-bootstrap = bootstrap;
       stdenv = pkgs.stdenv;
-    }
+    }).overrideAttrs
+      (old: {
+        # Scope tracing to the original hook and restore inherited shell options.
+        postPatch =
+          "_ct_gnat_native_postpatch_trace() {\nlocal -\nset -x\n"
+          + (old.postPatch or "")
+          + "\n}\n_ct_gnat_native_postpatch_trace\n";
+      })
   );
   packages = pkgs.callPackage (pkgs.path + "/pkgs/top-level/ada-packages.nix") {
     gnat = compiler;
