@@ -48,6 +48,13 @@ let
           preConfigure = (old.preConfigure or "") + ''
             export CC=${bootstrap}/bin/gcc
           '';
+          # Preserve failed configure status while exposing its real probe log.
+          failureHook = (old.failureHook or "") + ''
+            if [ -f config.log ] && [ ! -L config.log ]; then
+              printf '%s\n' 'GNAT native configure diagnostic: first 240 config.log lines'
+              sed -n '1,240p' config.log
+            fi
+          '';
           patches = map (
             patch:
             if
