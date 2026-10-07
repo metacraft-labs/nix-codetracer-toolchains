@@ -65,6 +65,7 @@ let
           # Dependency setup hooks reset CC before preConfigure.
           preConfigure = (old.preConfigure or "") + ''
             export CC=${bootstrap}/bin/gcc
+            export CXX=${bootstrap}/bin/g++
             # The selected wrapper already injects this exact libc CRT prefix.
             # Repeating it in nested build flags makes Darwin GCC emit duplicate
             # LC_RPATH entries; retain the wrapper prefix and every other flag.
