@@ -53,6 +53,16 @@ let
             if [ -f config.log ] && [ ! -L config.log ]; then
               printf '%s\n' 'GNAT native configure diagnostic: first 240 config.log lines'
               sed -n '1,240p' config.log
+              printf '%s\n' 'GNAT native bootstrap wrapper: exact generated flags'
+              for supportFile in cc-cflags cc-ldflags gnat-cflags gnat-ldflags; do
+                supportPath=${bootstrap}/nix-support/$supportFile
+                if [ -f "$supportPath" ] && [ ! -L "$supportPath" ]; then
+                  printf '%s\n' "$supportPath"
+                  sed -n '1,40p' "$supportPath"
+                fi
+              done
+              printf '%s\n' 'GNAT native bootstrap: original C conftest link dry run'
+              ${bootstrap}/bin/gcc -### -o conftest conftest.c 2>&1
             fi
           '';
           patches = map (
