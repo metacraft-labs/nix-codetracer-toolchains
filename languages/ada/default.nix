@@ -65,6 +65,36 @@ let
           # Dependency setup hooks reset CC before preConfigure.
           preConfigure = (old.preConfigure or "") + ''
             export CC=${bootstrap}/bin/gcc
+            # The selected wrapper already injects this exact libc CRT prefix.
+            # Repeating it in nested build flags makes Darwin GCC emit duplicate
+            # LC_RPATH entries; retain the wrapper prefix and every other flag.
+            libcPrefix="-B${pkgs.stdenv.cc.libc}/lib/"
+            fixedBuildFlags=0
+            seenBuildFlagKeys=" "
+            for flagIndex in "''${!makeFlagsArray[@]}"; do
+              case "''${makeFlagsArray[$flagIndex]}" in
+                CFLAGS_FOR_BUILD=*|CXXFLAGS_FOR_BUILD=*|FLAGS_FOR_BUILD=*)
+                  originalFlags="''${makeFlagsArray[$flagIndex]}"
+                  flagKey="''${originalFlags%%=*}"
+                  if [[ "$seenBuildFlagKeys" == *" $flagKey "* ]] ||
+                      [[ "$originalFlags" == *$'\n'* || "$originalFlags" == *$'\r'* ]] ||
+                      [ "$originalFlags" != "$flagKey=$EXTRA_FLAGS_FOR_BUILD $EXTRA_LDFLAGS_FOR_BUILD" ]; then
+                    printf '%s\n' 'GNAT native build flag shape changed; refusing duplicate removal' >&2
+                    exit 1
+                  fi
+                  seenBuildFlagKeys="$seenBuildFlagKeys$flagKey "
+                  changedFlags="''${originalFlags/ $libcPrefix / }"
+                  if [ "$changedFlags" = "$originalFlags" ] ||
+                      [[ " $changedFlags " == *" $libcPrefix "* ]]; then
+                    printf '%s\n' 'GNAT native build libc prefix changed; refusing duplicate removal' >&2
+                    exit 1
+                  fi
+                  makeFlagsArray[$flagIndex]="$changedFlags"
+                  fixedBuildFlags=$((fixedBuildFlags + 1))
+                  ;;
+              esac
+            done
+            test "$fixedBuildFlags" -eq 3
           '';
           # Preserve failed configure status while exposing its real probe log.
           failureHook = (old.failureHook or "") + ''
