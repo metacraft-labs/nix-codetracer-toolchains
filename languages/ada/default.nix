@@ -44,6 +44,8 @@ let
           );
         in
         {
+          # GCC's own configure checks Ada by compiling through CC, not GNATMAKE.
+          CC = "${bootstrap}/bin/gcc";
           patches = map (
             patch:
             if
