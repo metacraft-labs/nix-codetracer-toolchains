@@ -120,16 +120,19 @@ let
               fi
             done
           '';
-          patches = map (
-            patch:
-            if
-              builtins.baseNameOf (toString patch)
-              == "primbvxya494zf2b4zpbh7qaygijw1vk-gcc-13-darwin-aarch64-support.patch"
-            then
-              composedPatch
-            else
-              patch
-          ) old.patches;
+          # Parse gettext declarations before defining the setlocale fallback.
+          patches =
+            (map (
+              patch:
+              if
+                builtins.baseNameOf (toString patch)
+                == "primbvxya494zf2b4zpbh7qaygijw1vk-gcc-13-darwin-aarch64-support.patch"
+              then
+                composedPatch
+              else
+                patch
+            ) old.patches)
+            ++ [ ../c-cpp/gcc13-gettext-order.patch ];
           # Scope tracing to the original hook and restore inherited shell options.
           postPatch =
             "_ct_gnat_native_postpatch_trace() {\nlocal -\nset -x\n"
