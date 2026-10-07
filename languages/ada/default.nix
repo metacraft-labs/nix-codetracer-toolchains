@@ -44,8 +44,10 @@ let
           );
         in
         {
-          # GCC's own configure checks Ada by compiling through CC, not GNATMAKE.
-          CC = "${bootstrap}/bin/gcc";
+          # Dependency setup hooks reset CC before preConfigure.
+          preConfigure = (old.preConfigure or "") + ''
+            export CC=${bootstrap}/bin/gcc
+          '';
           patches = map (
             patch:
             if
