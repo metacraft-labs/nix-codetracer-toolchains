@@ -2,9 +2,27 @@
 { pkgs }:
 let
   nativeAppleSilicon = pkgs.stdenv.hostPlatform.system == "aarch64-darwin";
+  bootstrapCompiler = pkgs.callPackage ./native-bootstrap.nix { majorVersion = "13"; };
   bootstrap = pkgs.wrapCCWith {
-    cc = pkgs.callPackage ./native-bootstrap.nix { majorVersion = "13"; };
+    cc = bootstrapCompiler;
     bintools = pkgs.bintoolsDualAs;
+    # Darwin GCC already searches these native installation prefixes; adding
+    # them through -B makes its %P specs emit duplicate LC_RPATH commands.
+    extraBuildCommands = pkgs.lib.optionalString nativeAppleSilicon ''
+      supportFile="$out/nix-support/cc-cflags"
+      test -f "$supportFile" && test ! -L "$supportFile"
+      basePath="${bootstrapCompiler}/lib/gcc/aarch64-apple-darwin23.2.0/${bootstrapCompiler.gccVersion}"
+      expected=" -B${bootstrapCompiler}/lib -B$basePath -I$basePath/adainclude "
+      if ! printf '%s' "$expected" | cmp -s - "$supportFile"; then
+        printf '%s\n' 'GNAT bootstrap cc-cflags changed; refusing prefix removal' >&2
+        exit 1
+      fi
+      flags="$expected"
+      genericPrefix="-B${bootstrapCompiler}/lib"
+      flags="''${flags/ $genericPrefix/}"
+      flags="''${flags/ -B$basePath/}"
+      printf '%s' "$flags" > "$supportFile"
+    '';
   };
   # These are the exact pinned nixpkgs gnat13 producer arguments. The
   # existing Darwin x86 stdenv override does not apply on Apple Silicon.
