@@ -64,6 +64,14 @@ let
             substituteInPlace gcc/ada/Make-generated.in \
               --replace-fail ${pkgs.lib.escapeShellArg original} ${pkgs.lib.escapeShellArg replacement}
           '';
+          bindOsconsHostGenerator = original: replacement: ''
+            if [ "$(grep -Fxc ${pkgs.lib.escapeShellArg original} gcc/ada/gcc-interface/Makefile.in)" -ne 1 ]; then
+              printf '%s\n' 'GNAT xoscons host command changed; refusing runtime binding' >&2
+              exit 1
+            fi
+            substituteInPlace gcc/ada/gcc-interface/Makefile.in \
+              --replace-fail ${pkgs.lib.escapeShellArg original} ${pkgs.lib.escapeShellArg replacement}
+          '';
           # Only unchanged context follows the preceding install-name patch.
           composedPatch = pkgs.writeText targetName (
             builtins.replaceStrings
@@ -154,6 +162,8 @@ let
               bindHostGenerator "\tcd ada/gen_il; gnatmake -q -g $(GEN_IL_FLAGS) gen_il-main" "\tcd ada/gen_il; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q -g $(GEN_IL_FLAGS) gen_il-main"
               + bindHostGenerator "\t- cd ada/gen_il; ./gen_il-main" "\t- cd ada/gen_il; ${hostGeneratorRuntime} ./gen_il-main"
               + bindHostGenerator "\tcd ada/bldtools/snamest; gnatmake -q xsnamest ; ./xsnamest" "\tcd ada/bldtools/snamest; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q xsnamest ; ${hostGeneratorRuntime} ./xsnamest"
+              + bindOsconsHostGenerator "\t(cd ./bldtools/oscons ; gnatmake -q xoscons)" "\t(cd ./bldtools/oscons ; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q xoscons)"
+              + bindOsconsHostGenerator "\t    ../bldtools/oscons/xoscons s-oscons)" "\t    ${hostGeneratorRuntime} ../bldtools/oscons/xoscons s-oscons)"
             );
         }
       )
