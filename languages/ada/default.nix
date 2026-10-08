@@ -176,7 +176,11 @@ if nativeAppleSilicon then
   {
     gnat = compiler;
     default = compiler;
-    gprbuild = packages.gprbuild;
+    gprbuild = packages.gprbuild.override {
+      xmlada = packages.xmlada.overrideAttrs (previous: {
+        makeFlags = (previous.makeFlags or [ ]) ++ [ "GPRBUILD_OPTIONS=-v" ];
+      });
+    };
   }
 else
   {
