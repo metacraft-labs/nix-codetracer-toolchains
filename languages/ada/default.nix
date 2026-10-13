@@ -178,7 +178,13 @@ if nativeAppleSilicon then
     default = compiler;
     gprbuild = packages.gprbuild.override {
       xmlada = packages.xmlada.overrideAttrs (previous: {
-        makeFlags = (previous.makeFlags or [ ]) ++ [ "GPRBUILD_OPTIONS=-v" ];
+        # Use the Nix builder allocation for both XMLAda scheduling surfaces,
+        # as the owning GPRBuild package already does. Zero autodetection would
+        # otherwise escape that allocation in the command and project switches.
+        makeFlags = (previous.makeFlags or [ ]) ++ [
+          "GPRBUILD_OPTIONS=-v"
+          "PROCESSORS=$(NIX_BUILD_CORES)"
+        ];
       });
     };
   }
