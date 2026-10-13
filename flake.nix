@@ -146,6 +146,7 @@
         {
           pkgs,
           system,
+          config,
           ...
         }:
         let
@@ -187,6 +188,9 @@
               echo "  Use the overlay or import specific language modules"
             '';
           };
+
+          # CI evaluates checks; retain every actual exported package derivation.
+          checks = config.packages;
 
           # Development shell with all toolchains available
           devShells.default = pkgs.mkShell {
