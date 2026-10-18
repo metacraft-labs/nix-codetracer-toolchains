@@ -188,6 +188,10 @@
             '';
           };
 
+          checks = pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+            gcc13-gettext-order = import ./tests { inherit pkgs; };
+          };
+
           # Development shell with all toolchains available
           devShells.default = pkgs.mkShell {
             packages = with toolchains; [

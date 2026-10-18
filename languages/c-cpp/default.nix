@@ -7,10 +7,23 @@
 #   # Then use ccppToolchains.gcc, ccppToolchains.clang, etc.
 
 { pkgs }:
+let
+  gcc13 = pkgs.gcc13 or pkgs.gcc;
+in
 {
   # GCC toolchains
   gcc = pkgs.gcc;
-  gcc13 = pkgs.gcc13 or pkgs.gcc;
+  # Gettext declares setlocale on Darwin. Parse that declaration before
+  # libcpp installs its missing-setlocale fallback; keep Linux unchanged.
+  gcc13 =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      gcc13.override {
+        cc = gcc13.cc.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [ ./gcc13-gettext-order.patch ];
+        });
+      }
+    else
+      gcc13;
   gcc14 = pkgs.gcc14 or pkgs.gcc;
 
   # Clang toolchains
