@@ -35,10 +35,17 @@ let
       };
       # Clear nixpkgs patches - they're version-specific and don't apply to other versions.
       # Add back per-version patches as needed.
-      patches = pkgs.lib.optionals (builtins.compareVersions version "2.2.8" >= 0) [
-        # Fix cstring-to-string implicit conversion removed in 2.2.8
-        ./excpt-cstring.patch
-      ];
+      patches =
+        pkgs.lib.optionals (builtins.compareVersions version "2.2.8" >= 0) [
+          # Fix cstring-to-string implicit conversion removed in 2.2.8
+          ./excpt-cstring.patch
+        ]
+        ++ pkgs.lib.optionals (builtins.compareVersions version "2.0" >= 0) [
+          # Under --exceptions:goto, run exit procs outside error mode after an
+          # unhandled exception, so they neither crash (exit 139) nor get
+          # skipped. Not upstream yet; 1.6 has a different nimTestErrorFlag.
+          ./goto-exceptions-exit-procs.patch
+        ];
     });
 in
 {
