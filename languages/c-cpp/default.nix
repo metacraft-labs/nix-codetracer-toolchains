@@ -10,7 +10,18 @@
 {
   # GCC toolchains
   gcc = pkgs.gcc;
-  gcc13 = pkgs.gcc13 or pkgs.gcc;
+  gcc13 =
+    let
+      compiler = pkgs.gcc13 or pkgs.gcc;
+    in
+    if pkgs.stdenv.hostPlatform.isDarwin && pkgs ? gcc13 then
+      compiler.override {
+        cc = compiler.cc.overrideAttrs (previous: {
+          patches = (previous.patches or [ ]) ++ [ ./gcc13-gettext-order.patch ];
+        });
+      }
+    else
+      compiler;
   gcc14 = pkgs.gcc14 or pkgs.gcc;
 
   # Clang toolchains
