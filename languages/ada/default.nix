@@ -22,6 +22,25 @@ let
       flags="''${flags/ $genericPrefix/}"
       flags="''${flags/ -B$basePath/}"
       printf '%s' "$flags" > "$supportFile"
+
+      # The upstream driver's self-spec defaults --sysroot to whichever of the
+      # host Xcode or CommandLineTools SDK exists, so links read the host's
+      # libSystem stubs (unresolvable by this ld64 under Xcode 26) instead of
+      # the stdenv SDK. Pin the sysroot to the wrapper's SDKROOT.
+      hookFile="$out/nix-support/cc-wrapper-hook"
+      test ! -e "$hookFile"
+      cat > "$hookFile" <<'EOF'
+      _ctSysrootGiven=0
+      for _ctParam in ''${params+"''${params[@]}"}; do
+        case "$_ctParam" in
+          -isysroot* | --sysroot | --sysroot=*) _ctSysrootGiven=1 ;;
+        esac
+      done
+      if [[ "$_ctSysrootGiven" = 0 && -n "''${SDKROOT:-}" && "$*" != -v ]]; then
+        extraBefore=(-isysroot "$SDKROOT" ''${extraBefore+"''${extraBefore[@]}"})
+      fi
+      unset _ctSysrootGiven _ctParam
+      EOF
     '';
   };
   # These are the exact pinned nixpkgs gnat13 producer arguments. The
@@ -63,6 +82,26 @@ let
             fi
             substituteInPlace gcc/ada/Make-generated.in \
               --replace-fail ${pkgs.lib.escapeShellArg original} ${pkgs.lib.escapeShellArg replacement}
+          '';
+          # The Darwin patch enables heap trampolines (the stack is never
+          # executable on Apple Silicon) and the Apple stack-argument layout
+          # only for versioned aarch64-*-darwin2* targets. Nixpkgs configures
+          # the unversioned arm64-apple-darwin triple, which silently fell back
+          # to stack trampolines; GNAT-built tools then fault on the first
+          # nested-subprogram callback (gprbuild hangs in XMLAda's project scan).
+          darwinDefaultsCase = "# and variadic functions handling.\ncase \${target} in\naarch64*-*-darwin2*)";
+          bindDarwinDefaults = ''
+            if [ "$(grep -Fxc 'aarch64*-*-darwin2*)' gcc/config.gcc)" -ne 1 ] ||
+                ! grep -Fq 'tm_defines="$tm_defines HEAP_TRAMPOLINES_INIT=1"' gcc/config.gcc; then
+              printf '%s\n' 'GCC Darwin target defaults changed; refusing triple binding' >&2
+              exit 1
+            fi
+            substituteInPlace gcc/config.gcc \
+              --replace-fail ${pkgs.lib.escapeShellArg darwinDefaultsCase} ${
+                pkgs.lib.escapeShellArg (
+                  builtins.replaceStrings [ "darwin2*)" ] [ "darwin2* | aarch64*-*-darwin)" ] darwinDefaultsCase
+                )
+              }
           '';
           bindOsconsHostGenerator = original: replacement: ''
             if [ "$(grep -Fxc ${pkgs.lib.escapeShellArg original} gcc/ada/gcc-interface/Makefile.in)" -ne 1 ]; then
@@ -159,7 +198,8 @@ let
             + (old.postPatch or "")
             + "\n}\n_ct_gnat_native_postpatch_trace\n"
             + pkgs.lib.optionalString nativeAppleSilicon (
-              bindHostGenerator "\tcd ada/gen_il; gnatmake -q -g $(GEN_IL_FLAGS) gen_il-main" "\tcd ada/gen_il; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q -g $(GEN_IL_FLAGS) gen_il-main"
+              bindDarwinDefaults
+              + bindHostGenerator "\tcd ada/gen_il; gnatmake -q -g $(GEN_IL_FLAGS) gen_il-main" "\tcd ada/gen_il; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q -g $(GEN_IL_FLAGS) gen_il-main"
               + bindHostGenerator "\t- cd ada/gen_il; ./gen_il-main" "\t- cd ada/gen_il; ${hostGeneratorRuntime} ./gen_il-main"
               + bindHostGenerator "\tcd ada/bldtools/snamest; gnatmake -q xsnamest ; ./xsnamest" "\tcd ada/bldtools/snamest; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q xsnamest ; ${hostGeneratorRuntime} ./xsnamest"
               + bindOsconsHostGenerator "\t(cd ./bldtools/oscons ; gnatmake -q xoscons)" "\t(cd ./bldtools/oscons ; ${hostGeneratorRuntime} ${bootstrap}/bin/gnatmake -q xoscons)"
