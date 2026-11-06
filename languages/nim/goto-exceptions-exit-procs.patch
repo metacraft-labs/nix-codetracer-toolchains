@@ -1,0 +1,40 @@
+Leave goto-exceptions error mode before an unhandled exception's exit procs run.
+
+Under `--exceptions:goto` (the default for the C backend with ARC/ORC),
+`nimTestErrorFlag` reports an unhandled exception, clears `currException` and
+calls `rawQuit(1)` while the thread-local `nimInErrorMode` flag is still set.
+`rawQuit` runs the exit procs through `exit(3)`, so they execute as if an
+exception were in flight: a proc registered with `atexit`/`addQuitProc` enters
+the first `except` arm it reaches and segfaults reading the nil current
+exception (exit status 139 instead of 1), and `std/exitprocs.callClosures`
+returns right after taking its lock, so no `addExitProc` proc runs at all.
+
+Present unchanged in Nim v2.0.14 through v2.2.12 and in devel at fae346766
+(2026-10-23), so this is not a backport. The same change, with the regression
+test tests/exception/tunhandled_defect_exitproc.nim, is meant for upstream;
+drop this patch once a release carries it.
+
+diff --git a/lib/system/excpt.nim b/lib/system/excpt.nim
+index 6c4b85b01..6520f61be 100644
+--- a/lib/system/excpt.nim
++++ b/lib/system/excpt.nim
+@@ -483,8 +483,19 @@ when gotoBasedExceptions:
+     ## It also must be called at the end of every thread to ensure no
+     ## error is swallowed.
+     if nimInErrorMode and currException != nil:
++      # Leave error mode before running any more Nim code. Both the
++      # `unhandledExceptionHook` called by `reportUnhandledError` and the exit
++      # procs that `rawQuit` runs through `exit(3)` are ordinary goto-exceptions
++      # code: with the flag still set, their first error-flag test would branch
++      # as if an exception had just been raised, either skipping the rest of
++      # the proc or entering an `except` arm whose type test reads the nil
++      # `currException` and crashes. Exit procs must run normally after an
++      # unhandled exception; see `addExitProc` and `quit`.
++      nimInErrorMode = false
+       reportUnhandledError(currException)
+       currException = nil
++      # A Defect raised by the hook or the report sets the flag again.
++      nimInErrorMode = false
+       rawQuit(1)
+ 
+ proc raiseExceptionAux(e: sink(ref Exception)) {.nodestroy.} =
