@@ -22,7 +22,7 @@ This flake composes multiple popular language-specific Nix flakes and provides c
 | **Crystal**  | nixpkgs                                                           | Latest                                   |
 | **Swift**    | nixpkgs                                                           | Latest                                   |
 | **Fortran**  | nixpkgs                                                           | GFortran                                 |
-| **Ada**      | nixpkgs                                                           | GNAT                                     |
+| **Ada**      | nixpkgs                                                           | GNAT (not on aarch64-linux)              |
 | **COBOL**    | nixpkgs                                                           | GnuCOBOL                                 |
 | **Assembly** | nixpkgs                                                           | NASM + cross-compilers                   |
 | **Odin**     | nixpkgs                                                           | Latest                                   |

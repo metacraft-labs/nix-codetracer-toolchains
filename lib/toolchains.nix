@@ -27,6 +27,14 @@ let
   asm = import ../languages/asm { inherit pkgs; };
   odin = import ../languages/odin { inherit pkgs; };
   mojo = import ../languages/mojo { inherit pkgs; };
+
+  # GNAT and GPRBuild exist only on systems where languages/ada exports them.
+  # Adding them conditionally keeps the rest of the package set evaluable on
+  # systems such as aarch64-linux, where reading `ada.gnat` would throw.
+  adaPackages = pkgs.lib.optionalAttrs (ada ? gnat) {
+    gnat = ada.gnat;
+    gprbuild = ada.gprbuild;
+  };
 in
 {
   # Export all language modules
@@ -121,10 +129,6 @@ in
     # Fortran
     gfortran = fortran.gfortran;
 
-    # Ada
-    gnat = ada.gnat;
-    gprbuild = ada.gprbuild;
-
     # COBOL
     gnucobol = cobol.gnucobol;
 
@@ -143,5 +147,6 @@ in
 
     # Mojo (wrapper — requires external installation via magic CLI)
     mojo = mojo.default;
-  };
+  }
+  // adaPackages;
 }
