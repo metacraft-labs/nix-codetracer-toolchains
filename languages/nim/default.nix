@@ -64,8 +64,12 @@ in
   latest = mkNim "2.2.8" versions."2.2.8";
   default = mkNim "2.2.8" versions."2.2.8";
 
-  # Nimble package manager (from nixpkgs)
-  nimble = pkgs.nimble;
+  # Nimble package manager (from nixpkgs). A git hook or `git bisect run` leaks
+  # GIT_DIR into the nimble it starts, and nimble's git calls would then answer
+  # for that repository; the patch makes nimble clear those variables at startup.
+  nimble = pkgs.nimble.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./nimble-scrub-git-env.patch ];
+  });
 
   # For programmatic access
   inherit versions mkNim;

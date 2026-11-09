@@ -1,0 +1,19 @@
+--- a/src/nimble.nim
++++ b/src/nimble.nim
+@@ -2872,6 +2872,16 @@
+ when isMainModule:
+   var exitCode = QuitSuccess
+ 
++  # A git hook or `git bisect run` exports GIT_DIR (with GIT_PREFIX and
++  # GIT_EXEC_PATH) into the command it runs. Every git call nimble makes runs
++  # in a package or project directory of its own, and git reads GIT_DIR before
++  # it looks at the working directory, so a leaked GIT_DIR answers for the
++  # exported repository instead: a package's vcsRevision, file list and
++  # checkout would name that repository. Clear the variables before any git call.
++  for gitEnvVar in ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_PREFIX",
++                    "GIT_EXEC_PATH"]:
++    delEnv(gitEnvVar)
++
+   var opt: Options
+   try:
+     opt = parseCmdLine()
