@@ -54,8 +54,15 @@ def declared_systems():
 def nix_eval(attribute, expression):
     """Evaluate one flake attribute with `expression` applied, returning JSON."""
     result = subprocess.run(
-        ["nix", "eval", "--no-write-lock-file", "--json",
-         f"{ROOT}#{attribute}", "--apply", expression],
+        [
+            "nix",
+            "eval",
+            "--no-write-lock-file",
+            "--json",
+            f"{ROOT}#{attribute}",
+            "--apply",
+            expression,
+        ],
         capture_output=True,
         text=True,
     )
