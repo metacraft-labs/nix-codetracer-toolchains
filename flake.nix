@@ -176,7 +176,7 @@
               echo "  - ruby: Ruby interpreter versions"
               echo "  - swift: Swift compiler"
               echo "  - fortran: GFortran compiler"
-              echo "  - ada: GNAT Ada compiler"
+              echo "  - ada: GNAT Ada compiler (absent on aarch64-linux)"
               echo "  - cobol: GnuCOBOL compiler"
               echo "  - julia: Julia interpreter versions"
               echo "  - asm: Assembly toolchains (nasm, cross-compilers)"
@@ -194,40 +194,44 @@
 
           # Development shell with all toolchains available
           devShells.default = pkgs.mkShell {
-            packages = with toolchains; [
-              # Core toolchains
-              nim.default
-              rust.stable
-              zig.default
-              go.default
-              python.default
+            packages = pkgs.lib.filter (p: p != null) (
+              with toolchains;
+              [
+                # Core toolchains
+                nim.default
+                rust.stable
+                zig.default
+                go.default
+                python.default
 
-              # C/C++
-              c-cpp.gcc
-              c-cpp.clang
+                # C/C++
+                c-cpp.gcc
+                c-cpp.clang
 
-              # Other languages
-              d.ldc
-              pascal.fpc
-              crystal.default
-              ruby.default
-              fortran.gfortran
-              ada.gnat
-              cobol.gnucobol
+                # Other languages
+                d.ldc
+                pascal.fpc
+                crystal.default
+                ruby.default
+                fortran.gfortran
+                # Null where languages/ada has no GNAT producer; filtered out below.
+                (ada.gnat or null)
+                cobol.gnucobol
 
-              # Assembly
-              asm.nasm
+                # Assembly
+                asm.nasm
 
-              # Odin
-              odin.default
+                # Odin
+                odin.default
 
-              # Mojo (wrapper — requires external installation)
-              mojo.default
+                # Mojo (wrapper — requires external installation)
+                mojo.default
 
-              # Utilities
-              pkgs.just
-              pkgs.figlet
-            ];
+                # Utilities
+                pkgs.just
+                pkgs.figlet
+              ]
+            );
 
             shellHook = ''
               figlet "CT Toolchains"

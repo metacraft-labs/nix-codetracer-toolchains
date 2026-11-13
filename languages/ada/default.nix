@@ -1,7 +1,15 @@
 # Native Ada compiler and GPRBuild; preserve existing producers elsewhere.
 { pkgs }:
 let
-  nativeAppleSilicon = pkgs.stdenv.hostPlatform.system == "aarch64-darwin";
+  system = pkgs.stdenv.hostPlatform.system;
+  nativeAppleSilicon = system == "aarch64-darwin";
+  # Systems with a nixpkgs GNAT producer. nixpkgs' GNAT 13 bootstrap has no
+  # aarch64-linux entry, and forcing `pkgs.gnat` there throws "Unsupported
+  # system" instead of falling back, so every other system exports no GNAT.
+  nixpkgsGnatSystems = [
+    "x86_64-linux"
+    "x86_64-darwin"
+  ];
   bootstrapCompiler = pkgs.callPackage ./native-bootstrap.nix { majorVersion = "13"; };
   bootstrap = pkgs.wrapCCWith {
     cc = bootstrapCompiler;
@@ -228,9 +236,13 @@ if nativeAppleSilicon then
       });
     };
   }
-else
+else if builtins.elem system nixpkgsGnatSystems then
   {
     gnat = pkgs.gnat or pkgs.gnatPackages.gnat or null;
     default = pkgs.gnat or pkgs.gnatPackages.gnat or null;
     gprbuild = pkgs.gprbuild or pkgs.gnatPackages.gprbuild or null;
   }
+else
+  # No GNAT producer on this system: export nothing, so the attributes are
+  # absent rather than throwing when a consumer evaluates them.
+  { }
