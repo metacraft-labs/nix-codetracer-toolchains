@@ -67,8 +67,24 @@ in
   # Nimble package manager (from nixpkgs). A git hook or `git bisect run` leaks
   # GIT_DIR into the nimble it starts, and nimble's git calls would then answer
   # for that repository; the patch makes nimble clear those variables at startup.
+  #
+  # On macOS nimble loads OpenSSL with dlopen by leaf name the first time it
+  # resolves a dependency over HTTPS (`nimble build` asks api.github.com for
+  # Nim's tags), and nothing in a nix macOS environment puts a libssl on dyld's
+  # search path: the dlopen returns nil and nimble dies with SIGSEGV ("Attempt
+  # to read from nil?"), exit 139. On Linux the same build links OpenSSL at
+  # build time. So on Darwin the wrapper puts this OpenSSL first on dyld's
+  # fallback path, ahead of dyld's own defaults.
   nimble = pkgs.nimble.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [ ./nimble-scrub-git-env.patch ];
+    postInstall =
+      (old.postInstall or "")
+      + pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+        wrapProgram $out/bin/nimble \
+          --prefix DYLD_FALLBACK_LIBRARY_PATH : "${pkgs.lib.getLib pkgs.openssl}/lib" \
+          --suffix DYLD_FALLBACK_LIBRARY_PATH : /usr/local/lib \
+          --suffix DYLD_FALLBACK_LIBRARY_PATH : /usr/lib
+      '';
   });
 
   # For programmatic access
